@@ -18,18 +18,15 @@
 		packageVersions = (__PKG_VERSIONS__ || {}) as unknown;
 	}
 
-	$: versions = [
-		'dev',
-		...(packageVersions['eslint-plugin-security'] || ['6', '5', '4', '3', '2', '1'])
-	];
+	$: versions = ['dev', ...(packageVersions['eslint-plugin-security'] || ['1'])];
 
 	$: {
 		if (pluginVersion === 'dev') {
 			setupPlugin();
 		} else {
 			const url = `https://cdn.skypack.dev/eslint-plugin-security@${pluginVersion}`;
-			void import(/* @vite-ignore */ url).then((module) => {
-				setupPlugin(module);
+			void import(/* @vite-ignore */ url).then((module: { default?: any }) => {
+				setupPlugin(module?.default ?? module);
 			});
 		}
 	}
