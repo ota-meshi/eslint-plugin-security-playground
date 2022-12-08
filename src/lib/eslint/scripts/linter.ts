@@ -51,9 +51,9 @@ for (const [ruleId, rule] of new Linter().getRules()) {
 	const type = rule.meta!.type;
 	CORE_CATEGORIES.find((c) => c.type === type)!.rules.push(data);
 
-	if (rule.meta!.docs!.recommended) {
-		DEFAULT_RULES_CONFIG[ruleId] = 'error';
-	}
+	// if (rule.meta!.docs!.recommended) {
+	// 	DEFAULT_RULES_CONFIG[ruleId] = 'error';
+	// }
 }
 
 export let categories: Category[] = [...CORE_CATEGORIES];
