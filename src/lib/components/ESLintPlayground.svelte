@@ -5,12 +5,13 @@
 	import { deserializeState, serializeState } from '../eslint/scripts/state';
 	import { DEFAULT_RULES_CONFIG, getRule, linterStore } from '../eslint/scripts/linter.js';
 	import type { RulesConfig } from '../eslint/scripts/types';
-	$: linter = $linterStore;
+	import globals from 'globals';
+	$: ({ linter, plugins } = $linterStore);
 
 	const DEFAULT_CODE = `/* Welcome to eslint-plugin-security */
 
 var child_process = require('child_process')
-var path = 'user input';
+var path = userInput;
 child_process.exec('ls -l ' + path, function (err, data) {
 	console.log(data);
 });
@@ -23,7 +24,7 @@ child_process.exec('ls -l ' + path, function (err, data) {
 	let rules = state.rules || Object.assign({}, DEFAULT_RULES_CONFIG);
 	let messages: Linter.LintMessage[] = [];
 	let time = '';
-	let options = {
+	const options = {
 		filename: 'example.svelte'
 	};
 	let editor: ESLintEditor | null = null;
@@ -103,15 +104,18 @@ child_process.exec('ls -l ' + path, function (err, data) {
 				{linter}
 				bind:code
 				config={{
-					parserOptions: {
+					files: ['**/*.*'],
+					languageOptions: {
 						ecmaVersion: 'latest',
-						sourceType: 'module'
+						sourceType: 'module',
+						globals: {
+							...globals.node,
+							...globals.es2024,
+							...globals.builtin
+						}
 					},
 					rules,
-					env: {
-						browser: true,
-						es2021: true
-					}
+					plugins
 				}}
 				{options}
 				on:result={onLintedResult}
